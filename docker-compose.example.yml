@@ -1,0 +1,55 @@
+services:
+  openstatus-kuma-bridge:
+    build: .
+    # Or: image: ghcr.io/your-org/openstatus-kuma-bridge:0.1.0
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      LOG_LEVEL: info
+
+      # Must be the externally reachable origin: clients read this as
+      # info.primaryBaseURL and build links from it.
+      PUBLIC_BASE_URL: https://kuma.example.com
+      SERVER_TIMEZONE: Europe/Berlin
+      TRUST_PROXY: "true"
+
+      # Self-hosted OpenStatus: https://<your-openstatus>/rpc
+      OPENSTATUS_API_URL: https://openstatus.example.com/rpc
+      OPENSTATUS_API_KEY: os_api_xxxxxxxxxxxxxxxx
+
+      # The credentials your iOS client will use against the bridge.
+      BRIDGE_USERNAME: cedric
+      # pnpm bridge password hash
+      BRIDGE_PASSWORD_HASH: $argon2id$v=19$m=19456,t=2,p=1$c29tZXNhbHQ$aGFzaGhlcmU
+      # pnpm bridge secret  (>= 32 chars)
+      JWT_SECRET: change-me-to-a-long-random-string-at-least-32-chars
+
+      STATUS_POLL_INTERVAL_SECONDS: "30"
+      MONITOR_LIST_REFRESH_SECONDS: "60"
+      DEGRADED_STATUS_MAPPING: pending
+      STATUS_AGGREGATION_STRATEGY: openstatus
+      LATENCY_AGGREGATION: median
+
+      # Shared secret for POST /webhooks/openstatus. OpenStatus webhooks have no
+      # signature, so this header is the whole authentication mechanism.
+      OPENSTATUS_WEBHOOK_SECRET: another-long-random-shared-secret
+      OPENSTATUS_WEBHOOK_SECRET_HEADER: X-Bridge-Secret
+
+    volumes:
+      # Keeps the OpenStatus<->Kuma monitor id map across restarts and upgrades.
+      # Losing this file is survivable but every phone will see monitor ids
+      # change, which looks like monitors being replaced by other monitors.
+      - ./data:/app/data
+
+    ports:
+      # Bind to loopback only and let Caddy/Traefik front it, so TLS and the
+      # WebSocket upgrade are handled in one place.
+      - "127.0.0.1:3000:3000"
+
+    # The container is unprivileged; the only writable path is the volume.
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp

@@ -1,0 +1,18 @@
+node_modules/
+dist/
+coverage/
+
+# Local state: SQLite database, WAL files, screenshots of a captured protocol
+# session. Never commit these.
+data/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+
+.env
+.env.*
+!.env.example
+
+fixtures-private/
+*.log
+.DS_Store

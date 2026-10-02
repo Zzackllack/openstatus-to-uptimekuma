@@ -1,0 +1,9 @@
+# pnpm >= 12 refuses to install (exit 1) when a dependency has a build script
+# that has not been explicitly allowed. These are the ones we trust:
+#   esbuild          - downloads/validates its platform binary, needed by tsx/vitest
+#
+# Everything else in the tree is pure JS or ships prebuilt binaries, so it needs
+# no build step. Adding a new dependency with a postinstall means deciding here
+# first, on purpose, rather than discovering it at install time.
+allowBuilds:
+  esbuild: true
