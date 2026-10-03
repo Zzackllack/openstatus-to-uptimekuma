@@ -15,14 +15,14 @@ OpenStatus' data into the wire format those clients expect.
 └──────────────────┬────────────────────┘
                    │ Socket.IO (Kuma internal protocol)
                    ▼
-┌───────────────────────────────────────┐
-│  openstatus-kuma-bridge               │
+┌──────────────────────────────────────┐
+│  openstatus-kuma-bridge              │
 │                                      │
-│    kuma/     protocol facade          │
+│    kuma/     protocol facade         │
 │       ↕                              │
-│    model/    normalized domain model  │
+│    model/    normalized domain model │
 │       ↕                              │
-│    openstatus/  adapter               │
+│    openstatus/  adapter              │
 └──────────────────┬───────────────────┘
                    │ Connect-RPC (official SDK)
                    ▼
