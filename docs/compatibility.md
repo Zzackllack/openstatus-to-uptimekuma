@@ -12,8 +12,8 @@
 This project implements an **unofficial compatibility layer** against Uptime Kuma's
 internal client protocol. Uptime Kuma does not guarantee backwards compatibility for
 that interface, and does not endorse or support this project. A Uptime Kuma upgrade
-may break it; see `docs/protocol-research.md` for exactly which release and which
-files each behaviour was derived from.
+may break it; see [protocol-research.md](./protocol-research.md) for exactly which
+release and which files each behaviour was derived from.
 
 There is no claim of universal compatibility. Only the surface below is implemented.
 
@@ -204,7 +204,8 @@ There is nothing truthful to map.
 ## Native apps
 
 Not yet verified against real devices. Everything above is verified against the
-Uptime Kuma 2.5.5 source and a real Socket.IO client.
+Uptime Kuma 2.5.5 source and a real Socket.IO client. The device checklist that
+closes this gap is in [development.md](./development.md#testing-against-a-real-device).
 
 ### KumaAlert
 
@@ -232,53 +233,5 @@ Same as above.
 
 ## Manual test matrix
 
-Run through this against a real device before calling the bridge "working". Record
-every event the app sends that is not in the table above — those are the next
-compatibility gaps.
-
-```text
-[ ] add bridge URL to the app
-[ ] authentication succeeds with bridge credentials
-[ ] remembered login survives an app restart
-[ ] monitor list appears and shows real OpenStatus monitors
-[ ] monitor names, types and targets are correct
-[ ] paused monitors look paused
-[ ] current status matches OpenStatus
-[ ] response time renders
-[ ] monitor detail screen opens
-[ ] heartbeat history renders at the right density
-[ ] uptime percentage renders
-[ ] response-time chart renders
-[ ] a status change updates without pulling to refresh
-[ ] background → foreground refreshes correctly
-[ ] bridge restart reconnects without re-adding the server
-[ ] logs contain no secrets
-[ ] unsupported operations surface an error instead of lying
-```
-
-### Contributing protocol captures
-
-Only against servers you own.
-
-```bash
-# Disposable local Uptime Kuma for comparison
-docker run -d --name kuma -p 3001:3001 louislam/uptime-kuma:2.5.5
-
-# Record what a real client does, with secrets and hostnames stripped
-pnpm protocol:capture -- --url http://localhost:3001 --user admin --password admin \
-  --out tests/fixtures/kuma/2.5.5/session.json
-```
-
-`scripts/protocol-probe.ts` is a plain Socket.IO **client**: it connects, authenticates
-and records events. It does not intercept, patch or proxy traffic, and it does not
-attempt to defeat certificate pinning or extract secrets from third-party services.
-Passwords, tokens, notification configs, API keys and (by default) hostnames are
-redacted before anything is written to disk. Commit only sanitized output, and never
-your production credentials.
-
-Diffing a capture against the bridge is the intended workflow:
-
-```bash
-pnpm protocol:capture -- --url https://kuma.example.com --user cedric \
-  --out /tmp/bridge-session.json
-```
+The real measure of compatibility is a real device, so the checklist and the
+protocol-capture workflow live in [development.md](./development.md#testing-against-a-real-device).

@@ -1,0 +1,28 @@
+# openstatus-kuma-bridge
+#
+# Configuration lives in .env (copy .env.example -> .env), not here, so there is
+# exactly one place to look. See docs/deployment.md.
+services:
+  bridge:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+
+    volumes:
+      # Holds the OpenStatus<->Kuma monitor id map. Do not remove it: without this
+      # file every monitor gets a new id on the next start, which looks in the apps
+      # like monitors being replaced by other monitors.
+      - ./data:/app/data
+
+    ports:
+      # Loopback only. Put Caddy/Traefik/nginx in front for TLS and the WebSocket
+      # upgrade — both examples are in docs/deployment.md.
+      - "127.0.0.1:3000:3000"
+
+    # Unprivileged, read-only root filesystem. /app/data is the only writable path.
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp

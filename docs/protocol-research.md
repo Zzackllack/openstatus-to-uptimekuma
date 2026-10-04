@@ -413,7 +413,7 @@ updateMaintenance / deleteMaintenance`. Timestamps are RFC3339 **strings**.
 > **Maintenance in OpenStatus is scoped to status pages** (`page_id` +
 > `page_component_ids`), not to monitors. There is no per-monitor maintenance window.
 > The bridge therefore emits an **empty `maintenanceList`** and does not synthesize
-> `MAINTENANCE` heartbeats. Documented in COMPATIBILITY.md rather than faked.
+> `MAINTENANCE` heartbeats. Documented in compatibility.md rather than faked.
 
 ### Tags
 
@@ -489,5 +489,5 @@ These cannot be derived from source and are explicitly **not** implemented until
 3. Whether any client sends `getMonitorBeats` with a period larger than 720.
 4. Whether any client reads `info.version` on the *first* push (before login).
 
-Method for closing these gaps is in README §"Contributing protocol captures" and
-`scripts/protocol-probe.ts`. Observe traffic on our own server only.
+Method for closing these gaps is in development.md §"Contributing protocol captures"
+and `scripts/protocol-probe.ts`. Observe traffic on our own server only.

@@ -11,8 +11,6 @@ data
 docs
 tests
 *.md
-!README.md
-!COMPATIBILITY.md
 !LICENSE
 Dockerfile
-docker-compose.example.yml
+docker-compose.yaml

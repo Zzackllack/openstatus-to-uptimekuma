@@ -28,8 +28,13 @@ function usage(): never {
 
 async function readPassword(prompt: string): Promise<string> {
   if (!process.stdin.isTTY) {
+    // FIXME: piping does not work. This drains stdin to EOF, but `password hash`
+    // prompts twice, so the second call always finds an empty stream and exits with
+    // "no password provided on stdin". `docker compose run` and a normal terminal
+    // both allocate a TTY and are unaffected; only `echo pw | ...` breaks. Fix by
+    // reading stdin once and splitting it into the two answers.
     const chunks: Buffer[] = [];
-    for await (const chunk of process.stdin) chunks.push(Buffer.from(chunk));
+    for await (const chunk of process.stdin) chunks.push(chunk);
     const value = Buffer.concat(chunks).toString("utf8").trim();
     if (value.length === 0) throw new Error("no password provided on stdin");
     return value;
